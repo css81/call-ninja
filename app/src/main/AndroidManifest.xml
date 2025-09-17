@@ -1,9 +1,13 @@
-<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.sschoi.callninja">
 
-    <!-- 앱 이름 및 아이콘 -->
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- 필수 권한 -->
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+    <uses-permission android:name="android.permission.CALL_SCREENING"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -12,7 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <!-- Splash Activity -->
+        <!-- Splash Activity: 앱 시작 시 최초 진입 -->
         <activity
             android:name=".ui.activity.SplashActivity"
             android:exported="true">
@@ -22,13 +26,15 @@
             </intent-filter>
         </activity>
 
-        <!-- Permission Activity -->
-        <activity android:name=".ui.activity.PermissionActivity"
+        <!-- Permission Activity: 권한 요청 화면 -->
+        <activity
+            android:name=".ui.activity.PermissionActivity"
             android:exported="false" />
 
-        <!-- Main Activity -->
-        <activity android:name=".ui.activity.MainActivity"
-            android:exported="false" />
+        <!-- Main Activity: 권한 허용 후 진입 -->
+        <activity
+            android:name=".ui.activity.MainActivity"
+            android:exported="true" />
 
         <!-- Call Screening Service -->
         <service
@@ -40,25 +46,5 @@
             </intent-filter>
         </service>
 
-        <!-- Boot Receiver -->
-        <receiver
-            android:name=".receiver.BootReceiver"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
-            </intent-filter>
-        </receiver>
-
     </application>
-
-    <!-- 필수 권한: One Store 보안정책 최소화 -->
-    <uses-permission android:name="android.permission.READ_CONTACTS"/>
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-    <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-
-    <!-- 선택적 권한 (사용 시 권한 요청) -->
-    <!-- <uses-permission android:name="android.permission.READ_CALL_LOG"/> -->
 </manifest>

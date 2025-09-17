@@ -5,12 +5,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.sschoi.callninja.R;
 
@@ -18,61 +16,55 @@ public class PermissionActivity extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_CODE = 100;
 
-    private String[] REQUIRED_PERMISSIONS = new String[]{
-            Manifest.permission.READ_CONTACTS,
-            Manifest.permission.ANSWER_PHONE_CALLS,
-            Manifest.permission.READ_PHONE_STATE
-    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_permission);
 
-        Button btnGrant = findViewById(R.id.btnGrantPermission);
-        btnGrant.setOnClickListener(v -> checkAndRequestPermissions());
-    }
+        Button btnGrant = findViewById(R.id.btn_grant_permissions);
+        btnGrant.setOnClickListener(v -> requestPermissions());
 
-    private void checkAndRequestPermissions() {
-        boolean allGranted = true;
-        for (String permission : REQUIRED_PERMISSIONS) {
-            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
-                allGranted = false;
-                break;
-            }
-        }
-
-        if (allGranted) {
-            startMainActivity();
-        } else {
-            ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, PERMISSION_REQUEST_CODE);
+        if (hasAllPermissions(this)) {
+            startMain();
         }
     }
 
-    private void startMainActivity() {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-        finish();
+    private void requestPermissions() {
+        ActivityCompat.requestPermissions(this,
+                new String[]{
+                        Manifest.permission.READ_CONTACTS,
+                        Manifest.permission.READ_PHONE_STATE,
+                        Manifest.permission.CALL_SCREENING,
+                        Manifest.permission.POST_NOTIFICATIONS
+                }, PERMISSION_REQUEST_CODE);
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        boolean allGranted = true;
         if (requestCode == PERMISSION_REQUEST_CODE) {
-            for (int result : grantResults) {
-                if (result != PackageManager.PERMISSION_GRANTED) {
+            boolean allGranted = true;
+            for (int res : grantResults) {
+                if (res != PackageManager.PERMISSION_GRANTED) {
                     allGranted = false;
                     break;
                 }
             }
-            if (allGranted) {
-                startMainActivity();
-            } else {
-                Toast.makeText(this, "권한이 필요합니다.", Toast.LENGTH_SHORT).show();
-            }
+            if (allGranted) startMain();
         }
+    }
+
+    private void startMain() {
+        startActivity(new Intent(this, MainActivity.class));
+        finish();
+    }
+
+    public static boolean hasAllPermissions(PermissionActivity activity) {
+        return ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(activity, Manifest.permission.CALL_SCREENING) == PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(activity, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED;
     }
 }

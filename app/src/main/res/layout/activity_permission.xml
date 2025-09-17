@@ -1,30 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
+    android:padding="32dp"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center"
-    android:padding="24dp"
-    android:background="@color/white">
+    android:layout_height="match_parent">
 
-    <!-- 안내 텍스트 -->
     <TextView
-        android:id="@+id/tvPermissionMessage"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="앱 실행을 위해 필요한 권한을 허용해주세요."
-        android:textSize="16sp"
-        android:textColor="@color/black"
-        android:gravity="center"
-        android:layout_marginBottom="24dp"/>
+        android:text="앱 사용을 위해 다음 권한이 필요합니다:"
+        android:textSize="18sp"
+        android:paddingBottom="16dp"/>
 
-    <!-- 권한 허용 버튼 -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="• 연락처 읽기\n• 전화 상태 확인\n• Caller ID/차단\n• 알림 표시"
+        android:paddingBottom="32dp"/>
+
     <Button
-        android:id="@+id/btnGrantPermission"
-        android:layout_width="wrap_content"
+        android:id="@+id/btn_grant_permissions"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="권한 허용"
-        android:paddingHorizontal="24dp"
-        android:paddingVertical="12dp"/>
-
+        android:text="권한 허용"/>
 </LinearLayout>
