@@ -44,13 +44,33 @@ public class BlockLogDBHelper extends SQLiteOpenHelper {
     /**
      * Insert a new blocked call log into the database.
      */
-    public void insertLog(String phoneNumber) {
+    public void insertBlockLog(String phoneNumber) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("phoneNumber", phoneNumber);
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
         values.put("blockTime", timeStamp);
         db.insert(TABLE_NAME, null, values);
+    }
+
+    // 특정 번호가 이미 차단 목록에 있는지 확인
+    public boolean isNumberBlocked(String phoneNumber) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(
+                "block_logs",                // 테이블
+                new String[]{"phone_number"},// 조회할 컬럼
+                "phone_number = ?",          // WHERE 조건
+                new String[]{phoneNumber},   // WHERE 값
+                null,
+                null,
+                null
+        );
+
+        boolean exists = (cursor.getCount() > 0);
+        cursor.close();
+        db.close();
+
+        return exists;
     }
 
     /**

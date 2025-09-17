@@ -3,16 +3,19 @@ package com.sschoi.callninja.service;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.service.telecom.Call;
-import android.service.telecom.CallScreeningService;
+import android.telecom.Call;
+import android.telecom.CallScreeningService;
 
 import androidx.core.app.NotificationCompat;
 
+import com.sschoi.callninja.R;
 import com.sschoi.callninja.data.db.BlockLogDBHelper;
+import com.sschoi.callninja.util.ContactHelper;
 
 public class MyCallScreeningService extends CallScreeningService {
 
@@ -43,12 +46,36 @@ public class MyCallScreeningService extends CallScreeningService {
         }
     }
 
-    private boolean shouldBlockNumber(String number) {
-        BlockLogDBHelper db = new BlockLogDBHelper(this);
-        return db.isNumberBlocked(number);
-    }
+	private boolean shouldBlockNumber(String number) {
+		// DB 차단 여부
+		BlockLogDBHelper db = new BlockLogDBHelper(this);
+		boolean isBlockedInDB = db.isNumberBlocked(number);
 
-    private void vibratePhone() {
+		// 사용자 수신 정책 확인
+		SharedPreferences prefs = getSharedPreferences("prefs", MODE_PRIVATE);
+		int policy = prefs.getInt("call_policy", 0); // 기본: ALL
+
+		switch (policy) {
+			case 0: // 모든 번호 수신 → 절대 차단하지 않음
+				return false;
+
+			case 1: // 연락처만 수신 → 연락처가 아니거나 DB 등록 번호는 차단
+				return !ContactHelper.isContact(this, number) || isBlockedInDB;
+
+			case 2: // 즐겨찾기만 수신 → 즐겨찾기가 아니거나 DB 등록 번호 차단
+				return !ContactHelper.isFavorite(this, number) || isBlockedInDB;
+
+			case 3: // 연락처 + 즐겨찾기 수신 → 둘 다 아니거나 DB 등록 번호 차단
+				return !(ContactHelper.isContact(this, number) || ContactHelper.isFavorite(this, number)) || isBlockedInDB;
+
+			default:
+				return isBlockedInDB;
+		}
+	}
+
+
+
+	private void vibratePhone() {
         Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         if (vibrator != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -89,7 +116,7 @@ public class MyCallScreeningService extends CallScreeningService {
 
 		manager.notify(1000, builder.build()); // ID 고정 또는 System.currentTimeMillis() 가능
 	}
-	
+
 	private int getBadgeCount() {
 		return getSharedPreferences("prefs", MODE_PRIVATE).getInt("badge_count", 0);
 	}
