@@ -1,0 +1,3 @@
+// CallNinja/settings.gradle
+rootProject.name = "CallNinja"
+include ':app'

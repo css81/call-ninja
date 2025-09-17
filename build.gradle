@@ -1,0 +1,28 @@
+// Top-level build file
+buildscript {
+    ext {
+        agp_version = '8.5.0'
+    }
+	repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath "com.android.tools.build:gradle:$agp_version"
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs << "-Xlint:deprecation"
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
