@@ -26,7 +26,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+		
+		// 배지 숫자 초기화
+		resetBadgeCount();
+	
         switchFavoritesOnly = findViewById(R.id.switchFavoritesOnly);
         rvBlockLogs = findViewById(R.id.rvBlockLogs);
 
@@ -41,9 +44,24 @@ public class MainActivity extends AppCompatActivity {
             refreshBlockLogs();
         });
     }
+	
+	private void resetBadgeCount() {
+		SharedPreferences prefs = getSharedPreferences("prefs", MODE_PRIVATE);
+		prefs.edit().putInt("badge_count", 0).apply();
+
+		// 배지 표시를 지원하는 런처에서는 알림 숫자도 초기화
+		NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		manager.cancelAll(); // 기존 차단 알림 제거
+	}
 
     private void refreshBlockLogs() {
         List<BlockLog> logs = dbHelper.getAllLogs();
         adapter.update(logs);
     }
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		resetBadgeCount(); // 앱 화면 진입 시 배지 초기화
+	}
 }
