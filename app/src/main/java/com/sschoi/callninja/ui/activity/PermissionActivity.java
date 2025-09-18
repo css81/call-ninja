@@ -34,7 +34,6 @@ public class PermissionActivity extends AppCompatActivity {
                 new String[]{
                         Manifest.permission.READ_CONTACTS,
                         Manifest.permission.READ_PHONE_STATE,
-                        Manifest.permission.CALL_SCREENING,
                         Manifest.permission.POST_NOTIFICATIONS
                 }, PERMISSION_REQUEST_CODE);
     }
@@ -61,10 +60,9 @@ public class PermissionActivity extends AppCompatActivity {
         finish();
     }
 
-    public static boolean hasAllPermissions(PermissionActivity activity) {
+    public static boolean hasAllPermissions(AppCompatActivity activity) {
         return ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(activity, Manifest.permission.CALL_SCREENING) == PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(activity, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED;
     }
 }
